@@ -1,28 +1,51 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import getTable from './services/getTable';
+import getLatestNewsData from './components/fetchRequest'
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
-  }
+	constructor(props) {
+		super(props);
+		this.state = {
+			results: '',
+			news: []
+		};
+	}
+
+	handleSearch = () => {
+		getTable().then((data) => {
+			this.setState({
+				results: data,
+			});
+		});
+	};
+
+	 componentDidMount= () => {
+		getLatestNewsData().then(data => {
+			console.log(data, 'data once promise is resolved!');
+			this.setState({news: data});
+		})
+};
+
+
+
+	render() {
+
+		return (
+			<div id="App">
+				{this.state.news.map(header => (
+					<div key={header.NewsDetail.stringValue}>
+					<h3 >{header.NewsDetail.stringValue}</h3>
+					<p >{header.NewsHeading.stringValue}</p>
+					<a href={header.GroupBlogURL.stringValue}>
+					<button>More</button>
+					</a>
+					</div>
+				))}
+
+			</div>
+		);
+	}
 }
 
 export default App;
